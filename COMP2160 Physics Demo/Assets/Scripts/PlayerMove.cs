@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMove : MonoBehaviour
 {
 #region Serialized fields
@@ -12,6 +13,8 @@ public class PlayerMove : MonoBehaviour
 #region Private fields
     private Actions actions;
     private InputAction moveAction;
+    private Rigidbody2D rigidbody;
+    private float movement;
 #endregion
 
 #region Init
@@ -19,6 +22,8 @@ public class PlayerMove : MonoBehaviour
     {
         actions = new Actions();
         moveAction = actions.movement.move;
+
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void OnEnable()
@@ -40,8 +45,14 @@ public class PlayerMove : MonoBehaviour
 #region Update
     void Update()
     {
-        float movement = moveAction.ReadValue<float>() * speed * Time.deltaTime;
-        transform.Translate(movement * Vector3.right);
+        movement = moveAction.ReadValue<float>() * speed;        
+    }
+
+    void FixedUpdate()
+    {
+        Vector3 v = rigidbody.velocity;
+        v.x = movement; // (m, y)
+        rigidbody.velocity = v;
     }
 #endregion
 }
