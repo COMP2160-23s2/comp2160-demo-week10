@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlatformMove : MonoBehaviour
 {
 #region Serialized fields
@@ -11,9 +12,14 @@ public class PlatformMove : MonoBehaviour
 
 #region Private fields
     private int next = 0;
+    private Rigidbody2D rigidbody;
 #endregion
 
 #region Init
+    void Awake() 
+    {
+        rigidbody = GetComponent<Rigidbody2D>();
+    }
     void Start()
     {
         // reparent the waypoints so they are not attached to the platform
@@ -29,21 +35,23 @@ public class PlatformMove : MonoBehaviour
 #endregion
 
 #region Update
-    void Update()
+    void FixedUpdate()
     {
         float move = speed * Time.deltaTime;
-        Vector3 dir = waypoints[next].position - transform.position;
+        Vector2 dir = (Vector2)waypoints[next].position - rigidbody.position;
 
         if (move > dir.magnitude)
         {
             // don't overshoot the waypoint
-            transform.position = waypoints[next].position;
+            rigidbody.MovePosition(waypoints[next].position);            
             NextWaypoint();
         }
         else
-        {
-            transform.Translate(move * dir.normalized);
+        {            
+            rigidbody.MovePosition(rigidbody.position + move * dir.normalized);
         }
+
+        Debug.Log($"velocity = {rigidbody.velocity}");
     }
     
     private void NextWaypoint()
