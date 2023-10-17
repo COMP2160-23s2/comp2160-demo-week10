@@ -1,3 +1,9 @@
+ //
+ // Adds a custom module to the Profiler
+ // 
+ // See: https://docs.unity3d.com/Manual/Profiler-customizing-details-view.html
+ //
+ 
  using Unity.Profiling;
  using Unity.Profiling.Editor;
 
@@ -7,18 +13,11 @@
  {
     static readonly ProfilerCounterDescriptor[] k_Counters = new ProfilerCounterDescriptor[]
     {
+        // Note that these name strings have to match those in GameStats
         new ProfilerCounterDescriptor("Speed", GameStats.MyProfilerCategory),
         new ProfilerCounterDescriptor("Distance", GameStats.MyProfilerCategory),
         new ProfilerCounterDescriptor("Braking Distance", GameStats.MyProfilerCategory),
     };
-
-    // // Ensure that both ProfilerCategory.Scripts and ProfilerCategory.Memory categories are enabled when our module is active.
-    // static readonly string[] k_AutoEnabledCategoryNames = new string[]
-    // {
-    //     ProfilerCategory.Scripts.Name,
-    //     ProfilerCategory.Memory.Name
-    // };
-
 
     public GameProfilerModule() : base(k_Counters) { }
 }

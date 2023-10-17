@@ -60,6 +60,8 @@ public class PlayerMove : MonoBehaviour
 
         if (ground != null)
         {   
+            // we're standing on a moving platform
+            // add its x velocity to our own
             v.x += ground.velocity.x;
         }
         rigidbody.velocity = v;
@@ -67,11 +69,13 @@ public class PlayerMove : MonoBehaviour
 
     private void CheckOnGround()
     {
+        // cast a ray downwards a short distance to see whether it hits the ground
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position, Vector2.down, groundCheckDistance, groundLayer);
 
         if (hit.collider != null)
         {
+            // we hit something, record its rigidbody (if any)
             ground = hit.rigidbody;
         }
     }
@@ -81,8 +85,9 @@ public class PlayerMove : MonoBehaviour
 #region Gizmos
     private void OnDrawGizmos()
     {
+        // draw the ray for the CheckOnGround raycast
+        // color it red if it hit something with a rigidbody, or green otherwise
         Gizmos.color = (ground == null ? Color.green : Color.red);
-
         Gizmos.DrawRay(transform.position, Vector2.down * groundCheckDistance);
     }
 #endregion

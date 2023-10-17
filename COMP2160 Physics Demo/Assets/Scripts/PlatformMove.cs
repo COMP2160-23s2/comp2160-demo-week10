@@ -41,8 +41,10 @@ public class PlatformMove : MonoBehaviour
     {
         Vector2 dir = (Vector2)waypoints[next].position - rigidbody.position;
         Accelerate(dir.magnitude);
-        GameStats.PlatformSpeed.Value = speed;
         Move(dir);
+
+        // Profiling
+        GameStats.PlatformSpeed.Value = speed;
     }
 
     private void Move(Vector2 dir)
@@ -50,6 +52,7 @@ public class PlatformMove : MonoBehaviour
         float move = speed * Time.fixedDeltaTime;
         if (move > dir.magnitude)
         {
+            // stop if we would otherwise overshoot the waypoint
             speed = 0;            
         }
         rigidbody.velocity = speed * dir.normalized;
@@ -57,17 +60,21 @@ public class PlatformMove : MonoBehaviour
 
     private void Accelerate(float distanceToWaypoint) 
     {
+        // calculate how far from the waypoint we should start to brake
         // v^2 = u^2 + 2as 
         // 0 = u^2 + 2as
         // s = -u^2 / 2a
 
+        // this assumes we get to maximum speed
+        // if the waypoints are too close to one another,
+        // we may never reach max speed and this code will not work
         float brakingDistance = maxSpeed * maxSpeed / acceleration / 2;
 
+        // Profiling:
         GameStats.Distance.Value = distanceToWaypoint;
         GameStats.BrakingDistance.Value = brakingDistance;
 
         // accelerate or brake depending on the distance to the next waypoint
-
         if (distanceToWaypoint <= brakingDistance) 
         {
             // close to waypoint, slow down
