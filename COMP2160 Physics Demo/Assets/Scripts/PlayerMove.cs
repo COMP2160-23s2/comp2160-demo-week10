@@ -8,6 +8,8 @@ public class PlayerMove : MonoBehaviour
 {
 #region Serialized fields
     [SerializeField] private float speed = 2;
+    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] private LayerMask groundLayer;
 #endregion
 
 #region Private fields
@@ -15,6 +17,7 @@ public class PlayerMove : MonoBehaviour
     private InputAction moveAction;
     private Rigidbody2D rigidbody;
     private float movement;
+    private Rigidbody2D ground = null;
 #endregion
 
 #region Init
@@ -50,9 +53,38 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
+        CheckOnGround();
+
         Vector3 v = rigidbody.velocity;
         v.x = movement; // (m, y)
+
+        if (ground != null)
+        {   
+            v.x += ground.velocity.x;
+        }
         rigidbody.velocity = v;
     }
+
+    private void CheckOnGround()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(
+            transform.position, Vector2.down, groundCheckDistance, groundLayer);
+
+        if (hit.collider != null)
+        {
+            ground = hit.rigidbody;
+        }
+    }
+
 #endregion
+
+#region Gizmos
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = (ground == null ? Color.green : Color.red);
+
+        Gizmos.DrawRay(transform.position, Vector2.down * groundCheckDistance);
+    }
+#endregion
+
 }
