@@ -48,7 +48,7 @@ public class PlatformMove : MonoBehaviour
     
     private void NextWaypoint()
     {
-        next = (next + 1) % waypoints.Length;
+        next = (next + 1) % waypoints.Length;  // wrap to between 0 of #waypoints-1
     }
 #endregion
 }
