@@ -41,29 +41,42 @@ public class PlatformMove : MonoBehaviour
     {
         Vector2 dir = (Vector2)waypoints[next].position - rigidbody.position;
         Accelerate(dir.magnitude);
+        GameStats.PlatformSpeed.Value = speed;
         Move(dir);
     }
 
     private void Move(Vector2 dir)
     {
         float move = speed * Time.fixedDeltaTime;
+        Debug.Log($"move = {move}");
         if (move > dir.magnitude)
         {
             // don't overshoot the waypoint
             rigidbody.MovePosition(waypoints[next].position);            
-            NextWaypoint();
         }
         else
         {            
-            rigidbody.MovePosition(rigidbody.position + move * dir);
+            rigidbody.MovePosition(rigidbody.position + move * dir.normalized);
         }
 
     }
 
+    private float oldDistance = 0;
     private void Accelerate(float distanceToWaypoint) 
     {
+        Debug.Log($"distance travelled = {oldDistance - distanceToWaypoint}");
+        oldDistance = distanceToWaypoint;
+
+        // v^2 = u^2 + 2as 
+        // 0 = u^2 + 2as
+        // s = -u^2 / 2a
+
+        float brakingDistance = maxSpeed * maxSpeed / acceleration / 2;
+
+        GameStats.Distance.Value = distanceToWaypoint;
+        GameStats.BrakingDistance.Value = brakingDistance;
+
         // accelerate or brake depending on the distance to the next waypoint
-        float brakingDistance = speed * speed / 2 / acceleration;
 
         if (distanceToWaypoint <= brakingDistance) 
         {
@@ -72,6 +85,10 @@ public class PlatformMove : MonoBehaviour
             // close to waypoint, slow down
             speed -= acceleration * Time.fixedDeltaTime;
             speed = Mathf.Max(speed, 0);
+            if (speed == 0)
+            {
+                NextWaypoint();
+            }
         }
         else 
         {
@@ -87,6 +104,7 @@ public class PlatformMove : MonoBehaviour
     private void NextWaypoint()
     {
         next = (next + 1) % waypoints.Length;  // wrap to between 0 of #waypoints-1
+        // Debug.Break();
     }
 #endregion
 }

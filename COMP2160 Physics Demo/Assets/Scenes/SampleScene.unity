@@ -501,8 +501,12 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -6559088425598580010, guid: e773ada4747754959b962e473cbf0cc1, type: 3}
+      propertyPath: maxSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -6559088425598580010, guid: e773ada4747754959b962e473cbf0cc1, type: 3}
       propertyPath: acceleration
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5605271859976025638, guid: e773ada4747754959b962e473cbf0cc1, type: 3}
       propertyPath: m_Name
