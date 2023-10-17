@@ -48,7 +48,6 @@ public class PlatformMove : MonoBehaviour
     private void Move(Vector2 dir)
     {
         float move = speed * Time.fixedDeltaTime;
-        Debug.Log($"move = {move}");
         if (move > dir.magnitude)
         {
             // don't overshoot the waypoint
@@ -61,12 +60,8 @@ public class PlatformMove : MonoBehaviour
 
     }
 
-    private float oldDistance = 0;
     private void Accelerate(float distanceToWaypoint) 
     {
-        Debug.Log($"distance travelled = {oldDistance - distanceToWaypoint}");
-        oldDistance = distanceToWaypoint;
-
         // v^2 = u^2 + 2as 
         // 0 = u^2 + 2as
         // s = -u^2 / 2a
@@ -80,8 +75,6 @@ public class PlatformMove : MonoBehaviour
 
         if (distanceToWaypoint <= brakingDistance) 
         {
-            Debug.Log($"distance {distanceToWaypoint} <= {brakingDistance}");
-
             // close to waypoint, slow down
             speed -= acceleration * Time.fixedDeltaTime;
             speed = Mathf.Max(speed, 0);
@@ -92,19 +85,15 @@ public class PlatformMove : MonoBehaviour
         }
         else 
         {
-            Debug.Log($"distance {distanceToWaypoint} > {brakingDistance}");
             // far from waypoint, speed up
             speed += acceleration * Time.fixedDeltaTime;
             speed = Mathf.Min(speed, maxSpeed);
         }
-        Debug.Log($"speed = {speed}");
-
     }
     
     private void NextWaypoint()
     {
         next = (next + 1) % waypoints.Length;  // wrap to between 0 of #waypoints-1
-        // Debug.Break();
     }
 #endregion
 }
