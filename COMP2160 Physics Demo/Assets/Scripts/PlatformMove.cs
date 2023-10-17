@@ -50,14 +50,9 @@ public class PlatformMove : MonoBehaviour
         float move = speed * Time.fixedDeltaTime;
         if (move > dir.magnitude)
         {
-            // don't overshoot the waypoint
-            rigidbody.MovePosition(waypoints[next].position);            
+            speed = 0;            
         }
-        else
-        {            
-            rigidbody.MovePosition(rigidbody.position + move * dir.normalized);
-        }
-
+        rigidbody.velocity = speed * dir.normalized;
     }
 
     private void Accelerate(float distanceToWaypoint) 
