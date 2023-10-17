@@ -7,11 +7,13 @@ public class PlatformMove : MonoBehaviour
 {
 #region Serialized fields
     [SerializeField] private Transform[] waypoints;
-    [SerializeField] private float speed = 1;
+    [SerializeField] private float maxSpeed = 5;
+    [SerializeField] private float acceleration = 20;
 #endregion
 
 #region Private fields
     private int next = 0;
+    private float speed = 0;
     private Rigidbody2D rigidbody;
 #endregion
 
@@ -37,9 +39,14 @@ public class PlatformMove : MonoBehaviour
 #region Update
     void FixedUpdate()
     {
-        float move = speed * Time.deltaTime;
         Vector2 dir = (Vector2)waypoints[next].position - rigidbody.position;
+        Accelerate(dir.magnitude);
+        Move(dir);
+    }
 
+    private void Move(Vector2 dir)
+    {
+        float move = speed * Time.fixedDeltaTime;
         if (move > dir.magnitude)
         {
             // don't overshoot the waypoint
@@ -48,10 +55,33 @@ public class PlatformMove : MonoBehaviour
         }
         else
         {            
-            rigidbody.MovePosition(rigidbody.position + move * dir.normalized);
+            rigidbody.MovePosition(rigidbody.position + move * dir);
         }
 
-        Debug.Log($"velocity = {rigidbody.velocity}");
+    }
+
+    private void Accelerate(float distanceToWaypoint) 
+    {
+        // accelerate or brake depending on the distance to the next waypoint
+        float brakingDistance = speed * speed / 2 / acceleration;
+
+        if (distanceToWaypoint <= brakingDistance) 
+        {
+            Debug.Log($"distance {distanceToWaypoint} <= {brakingDistance}");
+
+            // close to waypoint, slow down
+            speed -= acceleration * Time.fixedDeltaTime;
+            speed = Mathf.Max(speed, 0);
+        }
+        else 
+        {
+            Debug.Log($"distance {distanceToWaypoint} > {brakingDistance}");
+            // far from waypoint, speed up
+            speed += acceleration * Time.fixedDeltaTime;
+            speed = Mathf.Min(speed, maxSpeed);
+        }
+        Debug.Log($"speed = {speed}");
+
     }
     
     private void NextWaypoint()
